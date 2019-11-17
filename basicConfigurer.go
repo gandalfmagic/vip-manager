@@ -147,25 +147,26 @@ func (c *BasicConfigurer) runAddressConfiguration(action string) bool {
 	cmd := exec.Command("ip", "addr", action,
 		c.GetCIDR(),
 		"dev", c.iface.Name)
+
 	err := cmd.Run()
-
-	switch exit := err.(type) {
-	case *exec.ExitError:
-		if status, ok := exit.Sys().(syscall.WaitStatus); ok {
-			if status.ExitStatus() == 2 {
-				// Already exists
-				return true
-			} else {
-				log.Printf("Got error %s", status)
-			}
-		}
-
-		return false
-	}
 	if err != nil {
-		log.Printf("Error running ip address %s %s on %s: %s",
-			action, c.vip, c.iface.Name, err)
-		return false
+		switch exit := err.(type) {
+		case *exec.ExitError:
+			if status, ok := exit.Sys().(syscall.WaitStatus); ok {
+				if status.ExitStatus() == 2 {
+					// Already exists
+					return true
+				} else {
+					log.Printf("Got error %d", status.ExitStatus())
+				}
+			}
+
+			return false
+		default:
+			log.Printf("Error running ip address %s %s on %s: %s",
+				action, c.vip, c.iface.Name, err)
+			return false
+		}
 	}
 	return true
 }
