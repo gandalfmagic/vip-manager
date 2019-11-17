@@ -1,5 +1,17 @@
 name: Go
-on: [push]
+
+on:
+  push:
+    # Publish `master` as Docker `latest` image.
+    branches:
+      - master
+    # Publish `v1.2.3` tags as releases.
+    tags:
+      - v*
+
+  # Run tests for any PRs.
+  pull_request:
+
 jobs:
 
   build:
@@ -69,3 +81,49 @@ jobs:
       - name: Create packages
         run: |
           make package
+
+      #- name: Upload artifacts, rpm package
+      #  uses: actions/upload-artifact@master
+      #  with:
+      #    name: rpm package
+      #    path: ./*.rpm
+
+      #- name: Upload artifacts, deb package
+      #  uses: actions/upload-artifact@master
+      #  with:
+      #    name: deb package
+      #    path: ./*.deb
+
+      - name: Create Release
+        if: github.event_name == 'push'
+        id: create_release
+        uses: actions/create-release@v1.0.0
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: ${{ github.ref }}
+          release_name: Release ${{ github.ref }}
+          draft: false
+          prerelease: false
+      - name: Upload Release Asset, deb package
+        if: github.event_name == 'push'
+        id: upload-release-asset
+        uses: actions/upload-release-asset@v1.0.1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }} # This pulls from the CREATE RELEASE step above, referencing it's ID to get its outputs object, which include a `upload_url`. See this blog post for more info: https://jasonet.co/posts/new-features-of-github-actions/#passing-data-to-future-steps
+          asset_path: ./*.deb
+          asset_name: deb package
+          asset_content_type: application/vnd.debian.binary-package
+      - name: Upload Release Asset, rpm package
+        if: github.event_name == 'push'
+        id: upload-release-asset
+        uses: actions/upload-release-asset@v1.0.1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }} # This pulls from the CREATE RELEASE step above, referencing it's ID to get its outputs object, which include a `upload_url`. See this blog post for more info: https://jasonet.co/posts/new-features-of-github-actions/#passing-data-to-future-steps
+          asset_path: ./*.rpm
+          asset_name: rpm package
+          asset_content_type: application/x-rpm
