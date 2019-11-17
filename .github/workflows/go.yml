@@ -74,8 +74,11 @@ jobs:
         uses: actions/checkout@v1
 
       - name: Create packages
+        id: create-packages
         run: |
           make package
+          echo "##[set-output name=rpm;]$(ls -1 *.rpm)"
+          echo "##[set-output name=deb;]$(ls -1 *.deb)"
 
       #- name: Upload artifacts, rpm package
       #  uses: actions/upload-artifact@master
@@ -108,7 +111,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }} # This pulls from the CREATE RELEASE step above, referencing it's ID to get its outputs object, which include a `upload_url`. See this blog post for more info: https://jasonet.co/posts/new-features-of-github-actions/#passing-data-to-future-steps
-          asset_path: vip-manager_${{ github.ref }}-1_amd64.deb
+          asset_path: ${{ steps.create-packages.outputs.deb }}
           asset_name: deb package
           asset_content_type: application/vnd.debian.binary-package
       - name: Upload Release Asset, rpm package
@@ -119,6 +122,6 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }} # This pulls from the CREATE RELEASE step above, referencing it's ID to get its outputs object, which include a `upload_url`. See this blog post for more info: https://jasonet.co/posts/new-features-of-github-actions/#passing-data-to-future-steps
-          asset_path: vip-manager-${{ github.ref }}-1.x86_64.rpm
+          asset_path: ${{ steps.create-packages.outputs.rpm }}
           asset_name: rpm package
           asset_content_type: application/x-rpm
