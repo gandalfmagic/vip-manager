@@ -112,7 +112,7 @@ jobs:
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }} # This pulls from the CREATE RELEASE step above, referencing it's ID to get its outputs object, which include a `upload_url`. See this blog post for more info: https://jasonet.co/posts/new-features-of-github-actions/#passing-data-to-future-steps
           asset_path: ${{ steps.create-packages.outputs.deb }}
-          asset_name: deb package
+          asset_name: ${{ steps.create-packages.outputs.deb }}
           asset_content_type: application/vnd.debian.binary-package
       - name: Upload Release Asset, rpm package
         if: github.event_name == 'push'
@@ -123,5 +123,5 @@ jobs:
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }} # This pulls from the CREATE RELEASE step above, referencing it's ID to get its outputs object, which include a `upload_url`. See this blog post for more info: https://jasonet.co/posts/new-features-of-github-actions/#passing-data-to-future-steps
           asset_path: ${{ steps.create-packages.outputs.rpm }}
-          asset_name: rpm package
+          asset_name: ${{ steps.create-packages.outputs.rpm }}
           asset_content_type: application/x-rpm
