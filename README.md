@@ -41,6 +41,14 @@ These configuration keys are currently mandatory:
 | VIP_TYPE  | etcd     | Type of endpoint (etcd or consul)                                                        |
 | VIP_ENDPOINT | http://10.1.2.3:2379 | Location of endpoint (etcd or consul)                                     |
 
+These configuration keys are optional:
+
+| Variable             | Example                     | Description                                                |
+|----------------------|-----------------------------|------------------------------------------------------------|
+| ETCD_TRUSTED_CA_FILE | /etc/etcd/ca.cert.pem       | see etcd documentation                                     |
+| ETCD_CERT_FILE       | /etc/etcd/10.1.2.3.cert.pem | dito                                                       |
+| ETCD_KEY_FILE        | /etc/etcd/10.1.2.3.key.pem  | dito                                                       |
+
 
 
 ## Author
