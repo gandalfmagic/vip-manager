@@ -18,7 +18,7 @@ all: vip-manager
 
 
 vip-manager: *.go */*.go
-	go build -mod=vendor -ldflags="-s -w" .
+	go build -ldflags="-s -w" .
 
 
 .PHONY: install
